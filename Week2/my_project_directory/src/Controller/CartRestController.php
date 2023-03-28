@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 
 #[Route("/api", name: "api_")]
-class CartController extends AbstractController
+class CartRestController extends AbstractController
 {
     #[Route('/cart', name: 'cart_index', methods: ['GET'])]
     public function index(ManagerRegistry $doctrine): Response
