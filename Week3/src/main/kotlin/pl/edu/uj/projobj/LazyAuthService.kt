@@ -4,25 +4,30 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class AuthService {
+class LazyAuthService {
     private var loggedIn: Boolean = false
 
+    companion object {
+        val instance: LazyAuthService by lazy {
+            LazyAuthService()
+        }
+    }
     fun authenticate(username: String, password: String): Boolean? {
-        if (loggedIn) {
+        if (instance.loggedIn) {
             return null
         }
         if (!username.isNullOrEmpty() and !password.isNullOrEmpty()) {
-            loggedIn = true
+            instance.loggedIn = true
             return true
         }
         return false
     }
 
     fun isLoggedIn(): Boolean {
-        return loggedIn
+        return instance.loggedIn
     }
 
     fun logout() {
-        loggedIn = false
+        instance.loggedIn = false
     }
 }
