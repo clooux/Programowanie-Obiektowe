@@ -16,7 +16,10 @@ class AuthController @Autowired constructor(private val authService: AuthService
 
     @PostMapping("/")
     fun auth(@RequestBody req: AuthRequest): ResponseEntity<String> {
-        return if (authService.authenticate(req.username, req.password)) {
+        val isAuthenticated = authService.authenticate(req.username, req.password);
+        return if (isAuthenticated == null) {
+            ResponseEntity.status(HttpStatus.CONFLICT).body("User is already logged in")
+        } else if (isAuthenticated) {
             ResponseEntity.ok("Logged in as ${req.username}");
         } else {
             ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password")
@@ -34,7 +37,7 @@ class AuthController @Autowired constructor(private val authService: AuthService
     @GetMapping("/product/{id}")
     fun getProduct(@PathVariable id: Int): ResponseEntity<Product> {
         if (authService.isLoggedIn()) {
-            return ResponseEntity.ok(ProductList.get(id));
+            return ResponseEntity.ok(ProductList[id-1]);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null)
     }
