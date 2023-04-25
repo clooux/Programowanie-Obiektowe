@@ -21,7 +21,8 @@ func main() {
 	db.Create(&models.Weather{Localization: "Cracow", Temp: 21, Date: "21.04.2023"})
 
 	controller := controller.NewController(db)
-	proxy := proxy.Proxy{}
+
+	proxy := proxy.NewProxy(controller)
 
 	e.GET("/weather", controller.GetWeathers)
 	e.GET("/weather/:id", proxy.GetWeather)

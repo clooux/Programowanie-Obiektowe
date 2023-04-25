@@ -13,7 +13,11 @@ import (
 )
 
 type Proxy struct {
-	controller.Controller
+	controller *controller.Controller
+}
+
+func NewProxy(c *controller.Controller) *Proxy {
+	return &Proxy{controller: c}
 }
 
 func (proxy *Proxy) GetWeather(c echo.Context) error {
@@ -22,12 +26,12 @@ func (proxy *Proxy) GetWeather(c echo.Context) error {
 		panic(err)
 	}
 	var weather models.Weather
-	proxy.Controller{}
-	proxy.Controller.db.First(&weather, "Id = ?", id)
+	db = proxy.controller.GetDB()
+	db.First(&weather, "Id = ?", id)
 
 	if (models.Weather{}) == weather {
 		weather = GetWeatherFromApi()
-		proxy.db.Create(&weather)
+		db.Create(&weather)
 
 		return c.JSON(http.StatusOK, weather)
 	}
