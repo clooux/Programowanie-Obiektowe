@@ -5,7 +5,6 @@ import (
 	"log"
 	"myapp/models"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -19,13 +18,13 @@ func NewController(db *gorm.DB) *Controller {
 	return &Controller{db: db}
 }
 
+func (controller *Controller) GetDB() *gorm.DB {
+	return controller.db
+}
+
 var API_KEY string = "5e8f200d25b9219f586d216fccaa33ea"
 
-func (controller *Controller) GetWeather(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		panic(err)
-	}
+func (controller *Controller) GetWeather(c echo.Context, id int) error {
 	var weather models.Weather
 	controller.db.First(&weather, "Id = ?", id)
 	return c.JSON(http.StatusOK, weather)

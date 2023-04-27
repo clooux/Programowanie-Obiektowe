@@ -3,6 +3,7 @@ package main
 import (
 	"myapp/controller"
 	"myapp/models"
+	"myapp/proxy"
 
 	"github.com/glebarez/sqlite"
 	"github.com/labstack/echo/v4"
@@ -17,12 +18,14 @@ func main() {
 	}
 	// Migrate the schema
 	db.AutoMigrate(&models.Weather{})
-	db.Create(&models.Weather{Localization: "Cracow", Temp: 21, Date: "21.04.2023"})
+	db.Create(&models.Weather{Localization: "Cracow", Temperature: 21.0, Date: "21.04.2023"})
 
 	controller := controller.NewController(db)
 
+	proxy := proxy.NewProxy(controller)
+
 	e.GET("/weather", controller.GetWeathers)
-	e.GET("/weather/:id", controller.GetWeather)
+	e.GET("/weather/:id", proxy.GetWeather)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
