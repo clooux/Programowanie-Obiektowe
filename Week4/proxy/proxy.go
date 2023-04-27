@@ -2,7 +2,6 @@ package proxy
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"myapp/controller"
@@ -55,8 +54,6 @@ func GetWeatherFromApi(location string) *models.WeatherApi {
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	sb := string(body)
-	fmt.Print(sb)
 	var weatherApi models.WeatherApi
 	err = json.Unmarshal(body, &weatherApi)
 	if err != nil {
