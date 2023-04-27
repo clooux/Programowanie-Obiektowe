@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"myapp/controller"
@@ -22,36 +23,45 @@ func NewProxy(c *controller.Controller) *Proxy {
 
 func (proxy *Proxy) GetWeather(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
+	location := c.QueryParam("location")
+
 	if err != nil {
 		panic(err)
 	}
 	var weather models.Weather
-	db = proxy.controller.GetDB()
-	db.First(&weather, "Id = ?", id)
+	db := proxy.controller.GetDB()
+	error := db.First(&weather, id).Error
 
-	if (models.Weather{}) == weather {
-		weather = GetWeatherFromApi()
+	if error != nil {
+		weatherApi := GetWeatherFromApi(location)
+		weather = models.Weather{Localization: weatherApi.Location.Name, Temperature: weatherApi.Current.Temp_c, Date: weatherApi.Location.Localtime}
+
+		if weather.Localization == "" {
+			return c.JSON(http.StatusBadRequest, "Bad location, send location as queryParam and use english version of location")
+		}
+
 		db.Create(&weather)
 
 		return c.JSON(http.StatusOK, weather)
 	}
 
-	return proxy.GetWeather(c)
+	return proxy.controller.GetWeather(c, id)
 }
 
-func GetWeatherFromApi() models.Weather {
-	resp, err := http.Get("http://api.weatherapi.com/v1/current.json?key=7eb6d8e408a0400abe6154939231304&q=Cracow&aqi=no")
+func GetWeatherFromApi(location string) *models.WeatherApi {
+	resp, err := http.Get("http://api.weatherapi.com/v1/current.json?key=7eb6d8e408a0400abe6154939231304&q=" + location + "&aqi=no")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	var weather models.Weather
-	err = json.Unmarshal(body, weather)
-
+	sb := string(body)
+	fmt.Print(sb)
+	var weatherApi models.WeatherApi
+	err = json.Unmarshal(body, &weatherApi)
 	if err != nil {
 		panic(err)
 	}
 
-	return weather
+	return &weatherApi
 }

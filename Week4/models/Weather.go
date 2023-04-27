@@ -5,6 +5,6 @@ import "gorm.io/gorm"
 type Weather struct {
 	gorm.Model
 	Localization string
-	Temp         int
+	Temperature  float32
 	Date         string
 }

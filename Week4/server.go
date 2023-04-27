@@ -18,7 +18,7 @@ func main() {
 	}
 	// Migrate the schema
 	db.AutoMigrate(&models.Weather{})
-	db.Create(&models.Weather{Localization: "Cracow", Temp: 21, Date: "21.04.2023"})
+	db.Create(&models.Weather{Localization: "Cracow", Temperature: 21.0, Date: "21.04.2023"})
 
 	controller := controller.NewController(db)
 
