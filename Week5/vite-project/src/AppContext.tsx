@@ -1,4 +1,10 @@
-import { createContext, useEffect, useState, useMemo, useCallback } from "react";
+import {
+  createContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { Item, Product } from "./Models";
 import Api from "./Api";
 
@@ -18,19 +24,19 @@ const defaultContext: AppState = {
   cart: [],
   money: 0,
   addProduct: () => {
-    undefined;
+    return;
   },
   removeProduct: () => {
-    undefined;
+    return;
   },
   clearProducts: () => {
-    undefined;
+    return;
   },
   addMoney: () => {
-    undefined;
+    return;
   },
   clearMoney: () => {
-    undefined;
+    return;
   },
 };
 
@@ -45,19 +51,24 @@ export function AppContextProvider({
   const [cart, setCart] = useState<Item[]>([]);
   const [money, setMoney] = useState<number>(0);
 
-  const addProduct = useCallback((product: Product) => {
-    const existingProduct = cart.find((item) => item.ID === product.ID);
+  const addProduct = useCallback(
+    (product: Product) => {
+      const existingProduct = cart.find((item) => item.ID === product.ID);
 
-    if (existingProduct) {
-      setCart((prevItems) =>
-        prevItems.map((item) =>
-          item.ID === product.ID ? { ...item, quantity: item.Amount + 1 } : item
-        )
-      );
-    } else {
-      setCart((prevItems) => [...prevItems, { ...product, Amount: 1 }]);
-    }
-  }, [cart]);
+      if (existingProduct) {
+        setCart((prevItems) =>
+          prevItems.map((item) =>
+            item.ID === product.ID
+              ? { ...item, quantity: item.Amount + 1 }
+              : item
+          )
+        );
+      } else {
+        setCart((prevItems) => [...prevItems, { ...product, Amount: 1 }]);
+      }
+    },
+    [cart]
+  );
 
   const removeProduct = useCallback((id: number) => {
     setCart((prevItems) =>
