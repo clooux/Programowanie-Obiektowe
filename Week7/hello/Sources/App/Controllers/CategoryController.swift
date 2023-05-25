@@ -7,6 +7,8 @@ struct CategoryController: RouteCollection {
         categories.get(use: index)
         categories.post(use: create)
         categories.group(":categoryID") { category in
+            category.get(use: read)
+            category.put(use: update)
             category.delete(use: delete)
         }
     }
@@ -17,6 +19,23 @@ struct CategoryController: RouteCollection {
 
     func create(req: Request) async throws -> Category {
         let category = try req.content.decode(Category.self)
+        try await category.save(on: req.db)
+        return category
+    }
+
+    func read(req: Request) async throws -> Category {
+        guard let category = try await Category.find(req.parameters.get("categoryID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        return category
+    }
+
+    func update(req: Request) async throws -> Category {
+        guard let category = try await Category.find(req.parameters.get("categoryID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        let updatedCategory = try req.content.decode(Category.self)
+        category = updatedCategory
         try await category.save(on: req.db)
         return category
     }
