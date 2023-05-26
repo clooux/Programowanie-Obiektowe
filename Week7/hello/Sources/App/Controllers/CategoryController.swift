@@ -3,7 +3,7 @@ import Vapor
 
 struct CategoryController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
-        let categories = routes.grouped("categories")
+        let categories = routes.grouped("api","categories")
         categories.get(use: index)
         categories.post(use: create)
         categories.group(":categoryID") { category in
@@ -35,7 +35,8 @@ struct CategoryController: RouteCollection {
             throw Abort(.notFound)
         }
         let updatedCategory = try req.content.decode(Category.self)
-        category = updatedCategory
+        category.name = updatedCategory.name
+        category.description = updatedCategory.description
         try await category.save(on: req.db)
         return category
     }

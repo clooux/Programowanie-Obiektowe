@@ -1,35 +1,35 @@
 import Fluent
 import Vapor
 
-struct ProductViewController: RouteCollection {
+struct CategoryViewController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
-        let products = routes.grouped("products")
+        let categories = routes.grouped("categories")
         // CRUD routes
-        products.get(use: indexView)
-        products.group("create") { product in
-            product.get(use: createView)
-            // product.post(use: createPostHandler)
+        categories.get(use: indexView)
+        categories.group("create") { category in
+            category.get(use: createView)
+            // category.post(use: createPostHandler)
         }
-        products.group(":productID") { product in
-            product.get(use: readView)
-            product.get("update", use: updateView)
-            // product.post("edit", use: editPostHandler)
-            // product.post("delete", use: deleteHandler)
+        categories.group(":categoryID") { category in
+            category.get(use: readView)
+            category.get("update", use: updateView)
+            // category.post("edit", use: editPostHandler)
+            // category.post("delete", use: deleteHandler)
         }
         
     }
 
-    // GET /products
+    // GET /categories
     func indexView(req: Request) throws -> EventLoopFuture<View> {
-        return Product.query(on: req.db).all().flatMap { products in
-            let context = ["products": products]
-            return req.view.render("Products/index", context)
+        return Category.query(on: req.db).all().flatMap { categories in
+            let context = ["categories": categories]
+            return req.view.render("Categories/index", context)
         }
     }
 
     // GET /users/create
     func createView(req: Request) throws -> EventLoopFuture<View> {
-        return req.view.render("Products/create")
+        return req.view.render("Categories/create")
     }
 
     // POST /users/create
@@ -44,30 +44,30 @@ struct ProductViewController: RouteCollection {
 
     // GET /users/{userID}
     func readView(req: Request) throws -> EventLoopFuture<View> {
-        guard let productID = req.parameters.get("productID", as: UUID.self) else {
+        guard let categoryID = req.parameters.get("categoryID", as: UUID.self) else {
             throw Abort(.badRequest)
         }
         
-        return Product.find(productID, on: req.db)
+        return Category.find(categoryID, on: req.db)
             .unwrap(or: Abort(.notFound))
-            .flatMap { product in
-                let context = ["product": product]
-                return req.view.render("Products/read", context)
+            .flatMap { category in
+                let context = ["category": category]
+                return req.view.render("Categories/read", context)
             }
     }
     
 
     // GET /users/{userID}/edit
     func updateView(req: Request) throws -> EventLoopFuture<View> {
-        guard let productID = req.parameters.get("productID", as: UUID.self) else {
+        guard let categoryID = req.parameters.get("categoryID", as: UUID.self) else {
             throw Abort(.badRequest)
         }
         
-        return Product.find(productID, on: req.db)
+        return Category.find(categoryID, on: req.db)
             .unwrap(or: Abort(.notFound))
-            .flatMap { product in
-                let context = ["product": product]
-                return req.view.render("Products/update", context)
+            .flatMap { category in
+                let context = ["category": category]
+                return req.view.render("Categories/update", context)
             } 
     }
 
@@ -111,7 +111,7 @@ struct ProductViewController: RouteCollection {
     // }
 }
 
-struct ProductFormData: Content {
-    let name: String
-    let description: String
-}
+// struct ProductFormData: Content {
+//     let name: String
+//     let description: String
+// }

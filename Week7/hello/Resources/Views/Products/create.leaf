@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Create product</title>
+</head>
+
+<body>
+  <h1>Create product</h1>
+
+  <form action="/products/new" method="post">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" step="1" required>
+
+    <button type="submit">Create product</button>
+  </form>
+
+  <br>
+  <button onclick="location.href='/products'" type="button">Return</button>
+</body>
+</html>

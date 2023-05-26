@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Create category</title>
+</head>
+
+<body>
+  <h1>Create category</h1>
+
+  <form action="/products/new" method="post">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="price">Description:</label>
+    <input type="text" id="description" name="description" required>
+
+    <button type="submit">Create category</button>
+  </form>
+
+  <br>
+  <button onclick="location.href='/categories'" type="button">Return</button>
+</body>
+</html>

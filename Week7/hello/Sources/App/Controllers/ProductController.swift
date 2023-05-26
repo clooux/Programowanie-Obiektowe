@@ -3,7 +3,7 @@ import Vapor
 
 struct ProductController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
-        let products = routes.grouped("products")
+        let products = routes.grouped("api","products")
         products.get(use: index)
         products.post(use: create)
         products.group(":productID") { product in
@@ -30,14 +30,15 @@ struct ProductController: RouteCollection {
         return product
     }
 
-    func update(req: Request) async throws -> Category {
-        guard let category = try await Category.find(req.parameters.get("categoryID"), on: req.db) else {
+    func update(req: Request) async throws -> Product {
+        guard let product = try await Product.find(req.parameters.get("productID"), on: req.db) else {
             throw Abort(.notFound)
         }
-        let updatedCategory = try req.content.decode(Category.self)
-        category = updatedCategory
-        try await category.save(on: req.db)
-        return category
+        let updatedProduct = try req.content.decode(Product.self)
+        product.name = updatedProduct.name
+        product.price = updatedProduct.price
+        try await product.save(on: req.db)
+        return product
     }
 
     func delete(req: Request) async throws -> HTTPStatus {

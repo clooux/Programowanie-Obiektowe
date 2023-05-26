@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Category</title>
+</head>
+
+<body>
+  <h1>#(category.name)</h1>
+  <h3>Description: #(category.description)</h3>
+  <button onclick="location.href='/categories/#(category.id)/update'" type="button">Update</button>
+  <br>
+  <button onclick="location.href='/categories'" type="button">Return</button>
+</body>
+</html>
