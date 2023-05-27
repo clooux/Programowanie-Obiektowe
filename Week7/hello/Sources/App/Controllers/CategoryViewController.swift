@@ -4,22 +4,21 @@ import Vapor
 struct CategoryViewController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let categories = routes.grouped("categories")
-        // CRUD routes
+
         categories.get(use: indexView)
         categories.group("create") { category in
             category.get(use: createView)
-            // category.post(use: createPostHandler)
+            category.post(use: createHandler)
         }
         categories.group(":categoryID") { category in
             category.get(use: readView)
             category.get("update", use: updateView)
-            // category.post("edit", use: editPostHandler)
-            // category.post("delete", use: deleteHandler)
+            category.post("update", use: updateHandler)
+            category.post("delete", use: deleteHandler)
         }
         
     }
 
-    // GET /categories
     func indexView(req: Request) throws -> EventLoopFuture<View> {
         return Category.query(on: req.db).all().flatMap { categories in
             let context = ["categories": categories]
@@ -27,22 +26,19 @@ struct CategoryViewController: RouteCollection {
         }
     }
 
-    // GET /users/create
     func createView(req: Request) throws -> EventLoopFuture<View> {
         return req.view.render("Categories/create")
     }
 
-    // POST /users/create
-    // func createPostHandler(req: Request) throws -> EventLoopFuture<Response> {
-    //     let data = try req.content.decode(UserFormData.self)
-    //     let user = User(name: data.name, email: data.email)
+    func createHandler(req: Request) throws -> EventLoopFuture<Response> {
+        let data = try req.content.decode(CategoryFormData.self)
+        let category = Category(name: data.name, description: data.description)
         
-    //     return user.save(on: req.db).flatMap {
-    //         return req.eventLoop.makeSucceededFuture(req.redirect(to: "/users"))
-    //     }
-    // }
+        return category.save(on: req.db).flatMap {
+            return req.eventLoop.makeSucceededFuture(req.redirect(to: "/categories"))
+        }
+    }
 
-    // GET /users/{userID}
     func readView(req: Request) throws -> EventLoopFuture<View> {
         guard let categoryID = req.parameters.get("categoryID", as: UUID.self) else {
             throw Abort(.badRequest)
@@ -56,8 +52,6 @@ struct CategoryViewController: RouteCollection {
             }
     }
     
-
-    // GET /users/{userID}/edit
     func updateView(req: Request) throws -> EventLoopFuture<View> {
         guard let categoryID = req.parameters.get("categoryID", as: UUID.self) else {
             throw Abort(.badRequest)
@@ -71,47 +65,41 @@ struct CategoryViewController: RouteCollection {
             } 
     }
 
-    // POST /users/{userID}/edit
-    // func editPostHandler(req: Request) throws -> EventLoopFuture<Response> {
-    //     guard let userID = req.parameters.get("userID", as: UUID.self) else {
-    //         throw Abort(.badRequest)
-    //     }
+    func updateHandler(req: Request) throws -> EventLoopFuture<Response> {
+        guard let categoryID = req.parameters.get("categoryID", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
         
-    //     let updatedData = try req.content.decode(UserFormData.self)
+        let updatedData = try req.content.decode(CategoryFormData.self)
         
-    //     return User.find(userID, on: req.db).flatMap { user in
-    //         guard let user = user else {
-    //             throw Abort(.notFound)
-    //         }
-            
-    //         user.name = updatedData.name
-    //         user.email = updatedData.email
-            
-    //         return user.save(on: req.db).flatMap {
-    //             return req.eventLoop.makeSucceededFuture(req.redirect(to: "/users/\(userID)"))
-    //         }
-    //     }
-    // }
+        return Category.find(categoryID, on: req.db)
+            .unwrap(or: Abort(.notFound))
+            .flatMap { category in
+                category.name = updatedData.name
+                category.description = updatedData.description
+                
+                return category.save(on: req.db).flatMap {
+                    return req.eventLoop.makeSucceededFuture(req.redirect(to: "/categories/\(categoryID)"))
+                }
+        }
+    }
 
-    // POST /users/{userID}/delete
-    // func deleteHandler(req: Request) throws -> EventLoopFuture<Response> {
-    //     guard let userID = req.parameters.get("userID", as: UUID.self) else {
-    //         throw Abort(.badRequest)
-    //     }
+    func deleteHandler(req: Request) throws -> EventLoopFuture<Response> {
+        guard let categoryID = req.parameters.get("categoryID", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
         
-    //     return User.find(userID, on: req.db).flatMap { user in
-    //         guard let user = user else {
-    //             throw Abort(.notFound)
-    //         }
-            
-    //         return user.delete(on: req.db).flatMap {
-    //             return req.eventLoop.makeSucceededFuture(req.redirect(to: "/users"))
-    //         }
-    //     }
-    // }
+        return Category.find(categoryID, on: req.db)
+            .unwrap(or: Abort(.notFound))
+            .flatMap { category in
+                return category.delete(on: req.db).flatMap {
+                    return req.eventLoop.makeSucceededFuture(req.redirect(to: "/categories"))
+                }
+        }
+    }
 }
 
-// struct ProductFormData: Content {
-//     let name: String
-//     let description: String
-// }
+struct CategoryFormData: Content {
+    let name: String
+    let description: String
+}

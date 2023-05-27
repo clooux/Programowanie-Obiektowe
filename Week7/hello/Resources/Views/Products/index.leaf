@@ -21,10 +21,16 @@
               <td>#(product.name)</td>
               <td>#(product.price)</td>
               <td><button onclick="location.href='/products/#(product.id)'" type="button">Details</button></td>
-              <td><button onclick="location.href='/products/#(product.id)'" type="button">Delete</button></td>
+              <td>
+                <form id="deleteForm" action="/products/#(product.id)/delete" method="POST">
+                  <button type="submit">Delete</button>
+                </form>
+              </td>
             </tr>
           #endfor 
         </tbody>
-      </table>
+  </table>
+  <br>
+  <button onclick="location.href='/products/create'" type="button">Create product</button>
 </body>
 </html>

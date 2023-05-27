@@ -21,10 +21,16 @@
               <td>#(category.name)</td>
               <td>#(category.description)</td>
               <td><button onclick="location.href='/categories/#(category.id)'" type="button">Details</button></td>
-              <td><button onclick="location.href='/categories/#(category.id)'" type="button">Delete</button></td>
+              <td>
+                <form id="deleteForm" action="/categories/#(category.id)/delete" method="POST">
+                  <button type="submit">Delete</button>
+                </form>
+              </td>
             </tr>
           #endfor 
         </tbody>
-      </table>
+  </table>
+  <br>
+  <button onclick="location.href='/categories/create'" type="button">Create category</button>
 </body>
 </html>
