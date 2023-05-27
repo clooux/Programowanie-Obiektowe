@@ -9,6 +9,7 @@
 <body>
   <h1>#(product.name)</h1>
   <h3>Price: #(product.price)</h3>
+  <p>Category: #(product.category.name)</p>
   <button onclick="location.href='/products/#(product.id)/update'" type="button">Update</button>
   <br>
   <button onclick="location.href='/products'" type="button">Return</button>

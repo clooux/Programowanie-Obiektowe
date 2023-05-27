@@ -13,6 +13,9 @@ final class Category: Model, Content {
     @Field(key: "description")
     var description: String
 
+    @Children(for: \.$category)
+    var products: [Product]
+
     init() { }
 
     init(id: UUID? = nil, name: String, description: String) {

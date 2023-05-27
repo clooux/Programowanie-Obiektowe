@@ -14,7 +14,9 @@ struct ProductController: RouteCollection {
     }
 
     func index(req: Request) async throws -> [Product] {
-        try await Product.query(on: req.db).all()
+        try await Product.query(on: req.db)
+            .with(\.$category)
+            .all()
     }
 
     func create(req: Request) async throws -> Product {
@@ -37,6 +39,7 @@ struct ProductController: RouteCollection {
         let updatedProduct = try req.content.decode(Product.self)
         product.name = updatedProduct.name
         product.price = updatedProduct.price
+        product.$category.id = updatedProduct.category.id!
         try await product.save(on: req.db)
         return product
     }
