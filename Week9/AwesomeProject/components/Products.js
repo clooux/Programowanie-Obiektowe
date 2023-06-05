@@ -1,10 +1,12 @@
-import { View, Text, ScrollView } from "react-native";
-import { useState, useEffect } from "react";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { useState, useEffect, useContext } from "react";
 import React from "react";
 import { getProducts } from "../api/products";
+import { AppContext } from "../AppContext";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const { addToCart } = useContext(AppContext);
 
   useEffect(() => {
     setProducts(getProducts());
@@ -31,6 +33,18 @@ export default function Products() {
           >
             <Text>{product.Name}</Text>
             <Text>Price: {product.Price}</Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#b70101",
+                borderRadius: 4,
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                alignItems: "center",
+              }}
+              onPress={() => addToCart(product)}
+            >
+              <Text>Add to Cart</Text>
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
